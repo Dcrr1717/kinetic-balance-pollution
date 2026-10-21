@@ -1,0 +1,23 @@
+# Pinned Lake project that machine-checks FiberLemmas.lean
+# (companion to "Exact fiber analysis of kinetic-balance spectral
+#  pollution for the radial Dirac operator").
+#
+# Toolchain is pinned in ./lean-toolchain  (leanprover/lean4:v4.33.0)
+# Mathlib is pinned below to the tag v4.33.0
+#   = commit db584cd6d46c92f209a44c0f1c829460d327499d
+# The exact resolved dependency graph is recorded in lake-manifest.json.
+#
+#   lake exe cache get      # prebuilt Mathlib oleans (several GB)
+#   lake build              # checks FiberLemmas.lean
+
+name = "feastlemmas"
+version = "1.0.0"
+defaultTargets = ["FiberLemmas"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "db584cd6d46c92f209a44c0f1c829460d327499d"
+
+[[lean_lib]]
+name = "FiberLemmas"
