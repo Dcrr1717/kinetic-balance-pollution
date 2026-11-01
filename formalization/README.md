@@ -60,6 +60,12 @@ axioms` on the main declarations returns exactly
 Verified on 2026-08-15 (`FiberLemmas` alone):
 `Build completed successfully (3079 jobs)`.
 
+Verified on 2026-11-01 (`FiberLemmas` + `KineticBalance`, with the pins
+below; Mathlib compiled from source):
+`Build completed successfully (3193 jobs)`. `lake env lean AxiomCheck.lean`
+prints `[propext, Classical.choice, Quot.sound]` for all 29 audited
+declarations.
+
 ## Reproducing the check
 
 A pinned Lake project ships alongside the source, so no `lake new` step

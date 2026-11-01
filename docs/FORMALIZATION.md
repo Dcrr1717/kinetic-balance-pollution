@@ -71,7 +71,7 @@ identity is proved. **not formalized** means there is no Lean counterpart.
 | `Λ₊ + Λ₋ = I` when `0 ∉ spec` (sanity check of the definition) | `specProjPos_add_specProjNeg` | closed |
 | Prop. 2.1: a singular triple `Kv = σu`, `Kᵀu = σv` gives an `H₀`-invariant fiber `span{(u,0),(0,v)}` on which `H₀` acts as `h(σ) = [[c², cσ],[cσ, −c²]]` | `dirac_isDiracFiber` (via `diracOp_inlE`, `diracOp_inrE`) | closed |
 | Distinct fibers are orthogonal | `dirac_fiber_isOrtho` | closed |
-| Fiber eigenpairs `h v± = ±E v±`, `v₊ = (1,ρ)/√(1+ρ²)`, `v₋ = (−ρ,1)/√(1+ρ²)` | `IsDiracFiber.apply_vPlus`, `IsDiracFiber.apply_vMinus`, `norm_vPlus`, `norm_vMinus`, `inner_vPlus_vMinus` | closed |
+| Fiber eigenpairs `h v± = ±E v±`, `v₊ = (1,ρ)/√(1+ρ²)`, `v₋ = (−ρ,1)/√(1+ρ²)` | `IsDiracFiber.apply_vPlus`, `IsDiracFiber.apply_vMinus`, `IsDiracFiber.norm_vPlus`, `IsDiracFiber.norm_vMinus`, `IsDiracFiber.inner_vPlus_vMinus` | closed |
 | `E(σ) = √(c⁴+c²σ²) = c²√(1+4t²)` | `energy_eq` | closed |
 | Fibers are `Λ±`-invariant | `IsDiracFiber.specProjPos_mem_span`, `IsDiracFiber.specProjNeg_mem_span` | closed |
 | The fibers, together with `ker K` and `ker Kᵀ`, exhaust `ℝ^(m⊕n)` (full block-diagonalization) | — | **not formalized**; the statements below do not need it |
@@ -150,8 +150,13 @@ independent checks.
 ## Trust base
 
 * No `sorry` and no added `axiom` anywhere in `FiberLemmas.lean` or
-  `KineticBalance/`. `#print axioms` on every main theorem returns only
-  `[propext, Classical.choice, Quot.sound]`.
+  `KineticBalance/`. `formalization/AxiomCheck.lean` runs `#print axioms` on
+  29 main declarations. Every one returns exactly
+  `[propext, Classical.choice, Quot.sound]` (checked 2026-11-01, together
+  with `lake build`: `Build completed successfully (3193 jobs)`).
+* `FiberLemmas.lean` is unchanged by this layer; `KineticBalance` imports it
+  and reuses `key_identity`, `rho_lt`, `rho_nonneg`, `w_sq`, `w_pos`,
+  `anti_in_gap` and `bal_above_gap_nonneg`.
 * Hypotheses are explicit in each statement. The only modelling choices are:
   * `Λ±` are *defined* as orthogonal projectors onto sums of eigenspaces.
     This is the standard definition in finite dimension, and
@@ -167,4 +172,5 @@ cd formalization
 lake exe cache get    # prebuilt Mathlib oleans; if the cache host is unreachable,
                       # `lake build` compiles the needed part of Mathlib from source
 lake build            # builds FiberLemmas and KineticBalance
+lake env lean AxiomCheck.lean   # axiom audit: expect only the three standard axioms
 ```

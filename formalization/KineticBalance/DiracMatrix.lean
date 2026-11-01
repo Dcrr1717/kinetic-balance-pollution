@@ -37,30 +37,7 @@ open Matrix WithLp
 
 namespace KineticBalance
 
-variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
-
-/-! ### The free Dirac matrix -/
-
-/-- `H₀ = [[c² I, c K], [c Kᵀ, −c² I]]`. -/
-def diracMatrix (c : ℝ) (K : Matrix m n ℝ) : Matrix (m ⊕ n) (m ⊕ n) ℝ :=
-  Matrix.fromBlocks (c ^ 2 • (1 : Matrix m m ℝ)) (c • K) (c • Kᵀ) (-(c ^ 2) • (1 : Matrix n n ℝ))
-
-/-- `H₀` as an operator on the Euclidean space `ℝ^(m ⊕ n)`. -/
-noncomputable def diracOp (c : ℝ) (K : Matrix m n ℝ) :
-    EuclideanSpace ℝ (m ⊕ n) →ₗ[ℝ] EuclideanSpace ℝ (m ⊕ n) :=
-  Matrix.toEuclideanLin (diracMatrix c K)
-
-lemma diracOp_apply (c : ℝ) (K : Matrix m n ℝ) (x : EuclideanSpace ℝ (m ⊕ n)) :
-    diracOp c K x = toLp 2 (diracMatrix c K *ᵥ ofLp x) := rfl
-
-lemma diracMatrix_isHermitian (c : ℝ) (K : Matrix m n ℝ) : (diracMatrix c K).IsHermitian := by
-  apply Matrix.IsHermitian.fromBlocks
-  · simp [Matrix.IsHermitian, Matrix.conjTranspose_smul]
-  · simp [Matrix.conjTranspose_smul]
-  · simp [Matrix.IsHermitian, Matrix.conjTranspose_smul]
-
-lemma diracOp_isSymmetric (c : ℝ) (K : Matrix m n ℝ) : (diracOp c K).IsSymmetric :=
-  Matrix.isSymmetric_toEuclideanLin_iff.mpr (diracMatrix_isHermitian c K)
+variable {m n : Type*}
 
 /-! ### Upper and lower components -/
 
@@ -69,6 +46,22 @@ def inlE (u : EuclideanSpace ℝ m) : EuclideanSpace ℝ (m ⊕ n) := toLp 2 (Su
 
 /-- The lower-component embedding `v ↦ (0, v)`. -/
 def inrE (v : EuclideanSpace ℝ n) : EuclideanSpace ℝ (m ⊕ n) := toLp 2 (Sum.elim 0 (ofLp v))
+
+lemma inlE_comp_inl (u : EuclideanSpace ℝ m) :
+    (fun i => (inlE u : EuclideanSpace ℝ (m ⊕ n)) (Sum.inl i)) = ofLp u := rfl
+
+lemma inlE_comp_inr (u : EuclideanSpace ℝ m) :
+    (fun j => (inlE u : EuclideanSpace ℝ (m ⊕ n)) (Sum.inr j)) = 0 := rfl
+
+lemma inrE_comp_inl (v : EuclideanSpace ℝ n) :
+    (fun i => (inrE v : EuclideanSpace ℝ (m ⊕ n)) (Sum.inl i)) = 0 := rfl
+
+lemma inrE_comp_inr (v : EuclideanSpace ℝ n) :
+    (fun j => (inrE v : EuclideanSpace ℝ (m ⊕ n)) (Sum.inr j)) = ofLp v := rfl
+
+section Inner
+
+variable [Fintype m] [Fintype n]
 
 @[simp] lemma inner_inlE_inlE (u u' : EuclideanSpace ℝ m) :
     ⟪(inlE u : EuclideanSpace ℝ (m ⊕ n)), inlE u'⟫_ℝ = ⟪u, u'⟫_ℝ := by
@@ -92,6 +85,56 @@ lemma norm_inlE (u : EuclideanSpace ℝ m) : ‖(inlE u : EuclideanSpace ℝ (m 
 lemma norm_inrE (v : EuclideanSpace ℝ n) : ‖(inrE v : EuclideanSpace ℝ (m ⊕ n))‖ = ‖v‖ := by
   rw [norm_eq_sqrt_real_inner, inner_inrE_inrE, ← norm_eq_sqrt_real_inner]
 
+end Inner
+
+/-! ### The free Dirac matrix -/
+
+section Matrix
+
+variable [DecidableEq m] [DecidableEq n]
+
+/-- `H₀ = [[c² I, c K], [c Kᵀ, −c² I]]`. -/
+def diracMatrix (c : ℝ) (K : Matrix m n ℝ) : Matrix (m ⊕ n) (m ⊕ n) ℝ :=
+  Matrix.fromBlocks (c ^ 2 • (1 : Matrix m m ℝ)) (c • K) (c • Kᵀ) (-(c ^ 2) • (1 : Matrix n n ℝ))
+
+lemma diracMatrix_isHermitian (c : ℝ) (K : Matrix m n ℝ) : (diracMatrix c K).IsHermitian := by
+  apply Matrix.IsHermitian.fromBlocks
+  · simp [Matrix.IsHermitian]
+  · simp
+  · simp [Matrix.IsHermitian]
+
+variable [Fintype m] [Fintype n]
+
+/-- `H₀` as an operator on the Euclidean space `ℝ^(m ⊕ n)`. -/
+noncomputable def diracOp (c : ℝ) (K : Matrix m n ℝ) :
+    EuclideanSpace ℝ (m ⊕ n) →ₗ[ℝ] EuclideanSpace ℝ (m ⊕ n) :=
+  Matrix.toEuclideanLin (diracMatrix c K)
+
+lemma diracOp_apply (c : ℝ) (K : Matrix m n ℝ) (x : EuclideanSpace ℝ (m ⊕ n)) :
+    diracOp c K x = toLp 2 (diracMatrix c K *ᵥ ofLp x) := rfl
+
+lemma diracOp_isSymmetric (c : ℝ) (K : Matrix m n ℝ) : (diracOp c K).IsSymmetric :=
+  Matrix.isSymmetric_toEuclideanLin_iff.mpr (diracMatrix_isHermitian c K)
+
+/-- `H₀ (x₁, x₂) = (c² x₁ + c K x₂, c Kᵀ x₁ − c² x₂)`. -/
+lemma ofLp_diracOp (c : ℝ) (K : Matrix m n ℝ) (x : EuclideanSpace ℝ (m ⊕ n)) :
+    ofLp (diracOp c K x) =
+      Sum.elim (c ^ 2 • (fun i => x (Sum.inl i)) + c • (K *ᵥ fun j => x (Sum.inr j)))
+        (c • (Kᵀ *ᵥ fun i => x (Sum.inl i)) - c ^ 2 • (fun j => x (Sum.inr j))) := by
+  rw [diracOp_apply, WithLp.ofLp_toLp, diracMatrix, Matrix.fromBlocks_mulVec]
+  simp only [neg_smul, Matrix.neg_mulVec, Matrix.smul_mulVec, Matrix.one_mulVec, sub_eq_add_neg]
+  rfl
+
+@[simp] lemma diracOp_inl (c : ℝ) (K : Matrix m n ℝ) (x : EuclideanSpace ℝ (m ⊕ n)) (i : m) :
+    diracOp c K x (Sum.inl i) = c ^ 2 * x (Sum.inl i) + c * (K *ᵥ fun j => x (Sum.inr j)) i := by
+  show ofLp (diracOp c K x) (Sum.inl i) = _
+  rw [ofLp_diracOp]; rfl
+
+@[simp] lemma diracOp_inr (c : ℝ) (K : Matrix m n ℝ) (x : EuclideanSpace ℝ (m ⊕ n)) (j : n) :
+    diracOp c K x (Sum.inr j) = c * (Kᵀ *ᵥ fun i => x (Sum.inl i)) j - c ^ 2 * x (Sum.inr j) := by
+  show ofLp (diracOp c K x) (Sum.inr j) = _
+  rw [ofLp_diracOp]; rfl
+
 /-- `H₀ (u, 0) = (c² u, c Kᵀ u)`, so `H₀ (u, 0) = c² (u,0) + cσ (0,v)` when
 `Kᵀ u = σ v`. -/
 lemma diracOp_inlE (c σ : ℝ) (K : Matrix m n ℝ) (u : EuclideanSpace ℝ m)
@@ -99,10 +142,10 @@ lemma diracOp_inlE (c σ : ℝ) (K : Matrix m n ℝ) (u : EuclideanSpace ℝ m)
     diracOp c K (inlE u) = c ^ 2 • inlE u + (c * σ) • inrE v := by
   ext i
   rcases i with i | j
-  · simp [diracOp_apply, diracMatrix, inlE, inrE, Matrix.fromBlocks_mulVec]
-  · have hj := congrFun hKu j
-    simp only [Pi.smul_apply, smul_eq_mul] at hj
-    simp [diracOp_apply, diracMatrix, inlE, inrE, Matrix.fromBlocks_mulVec, hj]
+  · rw [diracOp_inl, inlE_comp_inr, Matrix.mulVec_zero]
+    simp [inlE, inrE]
+  · rw [diracOp_inr, inlE_comp_inl, hKu]
+    simp [inlE, inrE]
     ring
 
 /-- `H₀ (0, v) = (c K v, −c² v)`, so `H₀ (0, v) = cσ (u,0) − c² (0,v)` when
@@ -112,11 +155,11 @@ lemma diracOp_inrE (c σ : ℝ) (K : Matrix m n ℝ) (u : EuclideanSpace ℝ m)
     diracOp c K (inrE v) = (c * σ) • inlE u - c ^ 2 • inrE v := by
   ext i
   rcases i with i | j
-  · have hi := congrFun hKv i
-    simp only [Pi.smul_apply, smul_eq_mul] at hi
-    simp [diracOp_apply, diracMatrix, inlE, inrE, Matrix.fromBlocks_mulVec, hi]
+  · rw [diracOp_inl, inrE_comp_inr, hKv]
+    simp [inlE, inrE]
     ring
-  · simp [diracOp_apply, diracMatrix, inlE, inrE, Matrix.fromBlocks_mulVec]
+  · rw [diracOp_inr, inrE_comp_inl, Matrix.mulVec_zero]
+    simp [inlE, inrE]
 
 /-- **Proposition 2.1 (fiber decomposition).** A singular triple
 `K v = σ u`, `Kᵀ u = σ v` with unit `u, v` gives the Dirac fiber
@@ -134,6 +177,7 @@ theorem dirac_isDiracFiber {c : ℝ} (hc : c ≠ 0) (K : Matrix m n ℝ) {σ : �
       apply_e₁ := by rw [diracOp_inlE c σ K u v hKu, hcσ]
       apply_e₂ := by rw [diracOp_inrE c σ K u v hKv, hcσ] }
 
+omit [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] in
 /-- Proposition 2.1, eigenvalues: `E(σ) = c²√(1+4t²) = √(c⁴ + c²σ²)` for
 `t = σ/(2c)`, `c > 0`. -/
 theorem energy_eq {c : ℝ} (hc : 0 < c) (σ : ℝ) :
@@ -158,20 +202,11 @@ theorem norm_diracOp_sq (c : ℝ) (K : Matrix m n ℝ) (x : EuclideanSpace ℝ (
   set x₂ : n → ℝ := fun j => x (Sum.inr j) with hx₂
   have hcross : x₁ ⬝ᵥ (K *ᵥ x₂) = (Kᵀ *ᵥ x₁) ⬝ᵥ x₂ := by
     rw [Matrix.dotProduct_mulVec, Matrix.mulVec_transpose]
-  have hx : ofLp x = Sum.elim x₁ x₂ := by
-    ext (i | j) <;> rfl
-  have hH : ofLp (diracOp c K x) =
-      Sum.elim (c ^ 2 • x₁ + c • (K *ᵥ x₂)) (c • (Kᵀ *ᵥ x₁) - c ^ 2 • x₂) := by
-    rw [diracOp_apply, WithLp.ofLp_toLp, hx, diracMatrix, Matrix.fromBlocks_mulVec]
-    simp only [Sum.elim_comp_inl, Sum.elim_comp_inr, Matrix.smul_mulVec, Matrix.one_mulVec,
-      neg_smul, sub_eq_add_neg]
   have hn : ∀ y : EuclideanSpace ℝ (m ⊕ n), ‖y‖ ^ 2 =
-      ∑ i, ofLp y (Sum.inl i) ^ 2 + ∑ j, ofLp y (Sum.inr j) ^ 2 := fun y => by
+      ∑ i, y (Sum.inl i) ^ 2 + ∑ j, y (Sum.inr j) ^ 2 := fun y => by
     rw [EuclideanSpace.real_norm_sq_eq, Fintype.sum_sum_type]
-    rfl
-  rw [hn, hn, hH, hx]
-  simp only [Sum.elim_inl, Sum.elim_inr, Pi.add_apply, Pi.sub_apply, Pi.smul_apply,
-    smul_eq_mul]
+  rw [hn, hn]
+  simp only [diracOp_inl, diracOp_inr]
   simp only [dotProduct] at hcross
   have e1 : ∑ i, (c ^ 2 * x₁ i + c * (K *ᵥ x₂) i) ^ 2 = c ^ 4 * ∑ i, x₁ i ^ 2 +
       2 * c ^ 3 * ∑ i, x₁ i * (K *ᵥ x₂) i + c ^ 2 * ∑ i, (K *ᵥ x₂) i ^ 2 := by
@@ -215,6 +250,7 @@ def diracFiber (u : ι → EuclideanSpace ℝ m) (v : ι → EuclideanSpace ℝ 
     Submodule ℝ (EuclideanSpace ℝ (m ⊕ n)) :=
   Submodule.span ℝ {inlE (u j), inrE (v j)}
 
+omit [DecidableEq m] [DecidableEq n] [Fintype ι] in
 /-- Distinct fibers are orthogonal. -/
 theorem dirac_fiber_isOrtho {u : ι → EuclideanSpace ℝ m} {v : ι → EuclideanSpace ℝ n}
     (hu : Orthonormal ℝ u) (hv : Orthonormal ℝ v) :
@@ -249,15 +285,18 @@ structure SingularSystem (K : Matrix m n ℝ) (σ : ι → ℝ) (u : ι → Eucl
 variable {c : ℝ} {K : Matrix m n ℝ} {σ : ι → ℝ} {u : ι → EuclideanSpace ℝ m}
   {v : ι → EuclideanSpace ℝ n}
 
+omit [Fintype ι] in
 lemma SingularSystem.isDiracFiber (hS : SingularSystem K σ u v) (hc : c ≠ 0) (j : ι) :
     IsDiracFiber (diracOp c K) c (fiberParam c σ j) (inlE (u j)) (inrE (v j)) :=
   dirac_isDiracFiber hc K (hS.orthonormal_u.1 j) (hS.orthonormal_v.1 j) (hS.mulVec_v j)
     (hS.mulVec_u j)
 
+omit [DecidableEq m] [DecidableEq n] [Fintype ι] in
 lemma SingularSystem.fiberParam_nonneg (hS : SingularSystem K σ u v) (hc : 0 < c) (j : ι) :
     0 ≤ fiberParam c σ j :=
   div_nonneg (hS.nonneg j) (by linarith)
 
+omit [Fintype ι] in
 /-- **Theorem 3.1 for `H₀`.** In every fiber, the leakage of the trial
 direction of family `f`, measured with the spectral projectors of `H₀`,
 is the closed form `f.leak (σ j/(2c))`. -/
@@ -313,6 +352,7 @@ noncomputable def dkbSpace (c : ℝ) (σ : ι → ℝ) (u : ι → EuclideanSpac
   Submodule.span ℝ (⋃ j, {trialDir Family.bal (fiberParam c σ j) (inlE (u j)) (inrE (v j)),
     trialDir Family.pos (fiberParam c σ j) (inlE (u j)) (inrE (v j))})
 
+omit [DecidableEq m] [DecidableEq n] [Fintype ι] in
 /-- Each fiber lies in the DKB pair space: `e₁ = (u_bal − t u_pos)/(1+t²)`
 and `e₂ = (t u_bal + u_pos)/(1+t²)`. -/
 lemma diracFiber_le_dkbSpace (j : ι) : diracFiber u v j ≤ dkbSpace c σ u v := by
@@ -339,6 +379,7 @@ lemma diracFiber_le_dkbSpace (j : ι) : diracFiber u v j ≤ dkbSpace c σ u v :
     rw [SetLike.mem_coe, this]
     exact Submodule.smul_mem _ _ (Submodule.add_mem _ (Submodule.smul_mem _ _ hb) hp)
 
+omit [DecidableEq m] [DecidableEq n] [Fintype ι] in
 /-- The DKB pair space is invariant under any operator that maps every
 fiber into itself. -/
 lemma dkbSpace_invariant (P : EuclideanSpace ℝ (m ⊕ n) →ₗ[ℝ] EuclideanSpace ℝ (m ⊕ n))
@@ -357,6 +398,7 @@ lemma dkbSpace_invariant (P : EuclideanSpace ℝ (m ⊕ n) →ₗ[ℝ] Euclidean
   | add y z _ _ hy hz => rw [map_add]; exact Submodule.add_mem _ hy hz
   | smul a y _ hy => rw [map_smul]; exact Submodule.smul_mem _ _ hy
 
+omit [Fintype ι] in
 /-- **Corollary 4.2, with `Λ₊`.** The DKB pair space has zero conformity
 defect: `(I − Π) Λ₊ Π = 0`. -/
 theorem dirac_dkb_defect_pos (hS : SingularSystem K σ u v) (hc : 0 < c) :
@@ -366,6 +408,7 @@ theorem dirac_dkb_defect_pos (hS : SingularSystem K σ u v) (hc : 0 < c) :
     fun j _ hx => (hS.isDiracFiber hc.ne' j).specProjPos_mem_span
       (diracOp_isSymmetric c K) hc.ne' hx)
 
+omit [Fintype ι] in
 /-- **Corollary 4.2, with `Λ₋`.** -/
 theorem dirac_dkb_defect_neg (hS : SingularSystem K σ u v) (hc : 0 < c) :
     (1 - (dkbSpace c σ u v).starProjection) * specProjNeg (diracOp c K) *
@@ -439,5 +482,7 @@ theorem dirac_bal_galerkin_above_gap (hS : SingularSystem K σ u v) (hc : 0 < c)
     sub_nonneg.mp (FeastLemmas.bal_above_gap_nonneg c _)⟩
 
 end Fibers
+
+end Matrix
 
 end KineticBalance
