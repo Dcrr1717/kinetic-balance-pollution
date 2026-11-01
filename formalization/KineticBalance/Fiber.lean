@@ -289,6 +289,7 @@ theorem specProjNeg_mem_span (h : IsDiracFiber T c t e₁ e₂) (hT : T.IsSymmet
   rw [show a • e₁ + b • e₂ = fv e₁ e₂ a b from rfl, h.specProjNeg_fv hT hc, vMinus, smul_fv]
   exact fv_mem_span _ _ _ _
 
+omit [FiniteDimensional ℝ E] in
 /-- The fiber `span {e₁, e₂}` is invariant under `T` itself. -/
 theorem apply_mem_span (h : IsDiracFiber T c t e₁ e₂) {x : E}
     (hx : x ∈ Submodule.span ℝ {e₁, e₂}) : T x ∈ Submodule.span ℝ {e₁, e₂} := by
@@ -409,9 +410,11 @@ def trialDir (f : Family) (t : ℝ) (e₁ e₂ : E) : E :=
 noncomputable def trialUnit (f : Family) (t : ℝ) (e₁ e₂ : E) : E :=
   ‖trialDir f t e₁ e₂‖⁻¹ • trialDir f t e₁ e₂
 
+omit [FiniteDimensional ℝ E] in
 lemma trialDir_mem_span (f : Family) (t : ℝ) (e₁ e₂ : E) :
     trialDir f t e₁ e₂ ∈ Submodule.span ℝ {e₁, e₂} := fv_mem_span _ _ _ _
 
+omit [FiniteDimensional ℝ E] in
 lemma trialUnit_mem_span (f : Family) (t : ℝ) (e₁ e₂ : E) :
     trialUnit f t e₁ e₂ ∈ Submodule.span ℝ {e₁, e₂} :=
   Submodule.smul_mem _ _ (trialDir_mem_span f t e₁ e₂)
@@ -420,11 +423,13 @@ namespace IsDiracFiber
 
 variable {T : E →ₗ[ℝ] E} {c t : ℝ} {e₁ e₂ : E}
 
+omit [FiniteDimensional ℝ E] in
 lemma norm_trialDir_pos (h : IsDiracFiber T c t e₁ e₂) (f : Family) :
     0 < ‖trialDir f t e₁ e₂‖ := by
   rw [trialDir, h.norm_fv]
   exact Real.sqrt_pos.mpr (f.coeffs_sq_pos t)
 
+omit [FiniteDimensional ℝ E] in
 lemma norm_trialUnit (h : IsDiracFiber T c t e₁ e₂) (f : Family) :
     ‖trialUnit f t e₁ e₂‖ = 1 := by
   have hpos := h.norm_trialDir_pos f
@@ -465,6 +470,7 @@ lemma leakage_trialDir_eq_norm (h : IsDiracFiber T c t e₁ e₂) (f : Family) :
   rw [leakage, trialUnit, map_smul, norm_smul, Real.norm_eq_abs,
     abs_of_pos (inv_pos.mpr (h.norm_trialDir_pos f)), div_eq_inv_mul]
 
+omit [FiniteDimensional ℝ E] in
 /-- Coordinates of the unit trial vector. -/
 lemma trialUnit_eq_fv (f : Family) :
     trialUnit f t e₁ e₂ = fv e₁ e₂ (‖trialDir f t e₁ e₂‖⁻¹ * (f.coeffs t).1)
@@ -511,6 +517,7 @@ theorem defect_factor_neg (h : IsDiracFiber T c t e₁ e₂) (hT : T.IsSymmetric
     h.norm_sub_specProjNeg_fv hT hc, h.norm_specProjPos_fv hT hc,
     h.norm_sub_specProjPos_fv hT hc, mul_comm]
 
+omit [FiniteDimensional ℝ E] in
 /-- **Eq. (rayleigh), operator form.** The Rayleigh quotient
 `⟪T b, b⟫` of the unit trial vector of each family is the fiber Rayleigh
 value: `R_bal = c²(1+3t²)/(1+t²)`, `R_spl = c²`,
@@ -526,15 +533,15 @@ theorem rayleigh_trialUnit (h : IsDiracFiber T c t e₁ e₂) (f : Family) :
   cases f <;> simp only [Family.coeffs, Family.rayleigh] at hn2 ⊢
   · have h1 : (1 : ℝ) + t ^ 2 ≠ 0 := by positivity
     field_simp
-    linear_combination (c ^ 2 * (1 + 3 * t ^ 2)) * hn2
-  · field_simp
-    linear_combination c ^ 2 * hn2
-  · have h1 : (1 : ℝ) + t ^ 2 ≠ 0 := by positivity
-    field_simp
     linear_combination (-(c ^ 2 * (1 + 3 * t ^ 2))) * hn2
+  · field_simp
+    linear_combination (-c ^ 2) * hn2
   · have h1 : (1 : ℝ) + t ^ 2 ≠ 0 := by positivity
     field_simp
-    linear_combination (c ^ 2 * (5 * t ^ 2 - 1)) * hn2
+    linear_combination (c ^ 2 * (1 + 3 * t ^ 2)) * hn2
+  · have h1 : (1 : ℝ) + t ^ 2 ≠ 0 := by positivity
+    field_simp
+    linear_combination (-(c ^ 2 * (5 * t ^ 2 - 1))) * hn2
 
 end IsDiracFiber
 

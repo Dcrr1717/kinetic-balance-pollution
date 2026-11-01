@@ -47,26 +47,30 @@ noncomputable def specProjNeg (T : E →ₗ[ℝ] E) : E →L[ℝ] E :=
 
 variable {T : E →ₗ[ℝ] E}
 
+omit [FiniteDimensional ℝ E] in
 lemma eigenspace_le_posSpectralSubspace {μ : ℝ} (hμ : 0 < μ) :
     Module.End.eigenspace T μ ≤ posSpectralSubspace T :=
   le_iSup₂ (f := fun (μ : ℝ) (_ : 0 < μ) => Module.End.eigenspace T μ) μ hμ
 
+omit [FiniteDimensional ℝ E] in
 lemma eigenspace_le_negSpectralSubspace {μ : ℝ} (hμ : μ < 0) :
     Module.End.eigenspace T μ ≤ negSpectralSubspace T :=
   le_iSup₂ (f := fun (μ : ℝ) (_ : μ < 0) => Module.End.eigenspace T μ) μ hμ
 
+omit [FiniteDimensional ℝ E] in
 /-- For symmetric `T`, an eigenspace with a nonpositive eigenvalue is
 orthogonal to the positive spectral subspace. -/
 lemma eigenspace_isOrtho_posSpectralSubspace (hT : T.IsSymmetric) {μ : ℝ} (hμ : μ ≤ 0) :
     Module.End.eigenspace T μ ⟂ posSpectralSubspace T :=
-  Submodule.isOrtho_iSup_right.mpr fun ν => Submodule.isOrtho_iSup_right.mpr fun hν =>
+  Submodule.isOrtho_iSup_right.mpr fun _ => Submodule.isOrtho_iSup_right.mpr fun hν =>
     hT.orthogonalFamily_eigenspaces.isOrtho (ne_of_lt (lt_of_le_of_lt hμ hν))
 
+omit [FiniteDimensional ℝ E] in
 /-- For symmetric `T`, an eigenspace with a nonnegative eigenvalue is
 orthogonal to the negative spectral subspace. -/
 lemma eigenspace_isOrtho_negSpectralSubspace (hT : T.IsSymmetric) {μ : ℝ} (hμ : 0 ≤ μ) :
     Module.End.eigenspace T μ ⟂ negSpectralSubspace T :=
-  Submodule.isOrtho_iSup_right.mpr fun ν => Submodule.isOrtho_iSup_right.mpr fun hν =>
+  Submodule.isOrtho_iSup_right.mpr fun _ => Submodule.isOrtho_iSup_right.mpr fun hν =>
     hT.orthogonalFamily_eigenspaces.isOrtho (ne_of_gt (lt_of_lt_of_le hν hμ))
 
 /-- `Λ₊ v = v` for an eigenvector `v` with positive eigenvalue. -/
@@ -79,7 +83,7 @@ theorem specProjPos_apply_of_pos {μ : ℝ} {v : E} (hv : T v = μ • v) (hμ :
 (`T` symmetric). -/
 theorem specProjPos_apply_of_nonpos (hT : T.IsSymmetric) {μ : ℝ} {v : E}
     (hv : T v = μ • v) (hμ : μ ≤ 0) : specProjPos T v = 0 :=
-  Submodule.starProjection_apply_eq_zero_iff.mpr
+  (Submodule.starProjection_apply_eq_zero_iff _).mpr
     (eigenspace_isOrtho_posSpectralSubspace hT hμ (Module.End.mem_eigenspace_iff.mpr hv))
 
 /-- `Λ₋ v = v` for an eigenvector `v` with negative eigenvalue. -/
@@ -92,9 +96,10 @@ theorem specProjNeg_apply_of_neg {μ : ℝ} {v : E} (hv : T v = μ • v) (hμ :
 (`T` symmetric). -/
 theorem specProjNeg_apply_of_nonneg (hT : T.IsSymmetric) {μ : ℝ} {v : E}
     (hv : T v = μ • v) (hμ : 0 ≤ μ) : specProjNeg T v = 0 :=
-  Submodule.starProjection_apply_eq_zero_iff.mpr
+  (Submodule.starProjection_apply_eq_zero_iff _).mpr
     (eigenspace_isOrtho_negSpectralSubspace hT hμ (Module.End.mem_eigenspace_iff.mpr hv))
 
+omit [FiniteDimensional ℝ E] in
 /-- The negative and positive spectral subspaces of a symmetric operator are
 orthogonal. -/
 lemma negSpectralSubspace_isOrtho_pos (hT : T.IsSymmetric) :
@@ -125,9 +130,9 @@ theorem specProjPos_add_specProjNeg (hT : T.IsSymmetric) (hker : ∀ v, T v = 0 
     rw [hsup]; exact Submodule.mem_top
   obtain ⟨p, hp, q, hq, rfl⟩ := Submodule.mem_sup.mp hx
   have h1 : specProjPos T p = p := Submodule.starProjection_eq_self_iff.mpr hp
-  have h2 : specProjPos T q = 0 := Submodule.starProjection_apply_eq_zero_iff.mpr (hNP hq)
+  have h2 : specProjPos T q = 0 := (Submodule.starProjection_apply_eq_zero_iff _).mpr (hNP hq)
   have h3 : specProjNeg T p = 0 :=
-    Submodule.starProjection_apply_eq_zero_iff.mpr (hNP.symm hp)
+    (Submodule.starProjection_apply_eq_zero_iff _).mpr (hNP.symm hp)
   have h4 : specProjNeg T q = q := Submodule.starProjection_eq_self_iff.mpr hq
   simp [h1, h2, h3, h4]
 
