@@ -143,8 +143,8 @@ theorem global_defect [FiniteDimensional ℝ E] {ι : Type*} [Fintype ι] [Nonem
     have hQPQ : Q (P (Q x)) = ∑ i, ⟪b i, x⟫_ℝ • (⟪b i, P (b i)⟫_ℝ • b i) := by
       rw [hPQ, map_sum]
       simp only [map_smul, hQP]
-    simp only [hDdef, ContinuousLinearMap.mul_apply, ContinuousLinearMap.sub_apply,
-      ContinuousLinearMap.one_apply]
+    simp only [hDdef, mul_apply_eq_comp, sub_apply,
+      one_apply_eq_self]
     rw [hQPQ, hPQ, ← Finset.sum_sub_distrib]
     simp only [hwdef, smul_sub]
   set M := Finset.univ.sup' Finset.univ_nonempty (fun i => ‖w i‖) with hMdef
@@ -191,8 +191,8 @@ theorem defect_eq_zero_of_invariant [FiniteDimensional ℝ E] (K V : Submodule �
     (hKV : ∀ x ∈ V, K.starProjection x ∈ V) :
     (1 - V.starProjection) * K.starProjection * V.starProjection = 0 := by
   ext x
-  simp only [ContinuousLinearMap.mul_apply, ContinuousLinearMap.sub_apply,
-    ContinuousLinearMap.one_apply, ContinuousLinearMap.zero_apply]
+  simp only [mul_apply_eq_comp, sub_apply,
+    one_apply_eq_self, zero_apply]
   rw [Submodule.starProjection_eq_self_iff.mpr (hKV _ (V.starProjection_apply_mem x)),
     sub_self]
 
