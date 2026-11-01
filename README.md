@@ -17,10 +17,15 @@ prepared for the IMA Journal of Numerical Analysis.
   `et3_splus_onset.py`), ΔN measurement (`measure_deltaN.py`), the leakage
   figure (`fig_teorema_leakage.py`), and a quadrature test
   (`test_cusp_quadrature.py`).
-- `formalization/` — the Lean formalization sources (`FiberLemmas.lean`,
-  `lakefile.toml`, `lake-manifest.json`, `lean-toolchain`, `README.md`,
-  `SCOPE.md`). The `.lake/` build/dependency tree is **not** included; run
-  `lake exe cache get` (or `lake build`) to fetch Mathlib and build.
+- `formalization/` — the Lean formalization sources: the scalar identities
+  (`FiberLemmas.lean`), the operator-level library (`KineticBalance/`, with
+  Prop. 2.1, Thms 3.1, 4.1, Cor. 4.2 and Thm 5.1(a) for the free Dirac
+  matrix), `lakefile.toml`, `lake-manifest.json`, `lean-toolchain`,
+  `README.md`, `SCOPE.md`. The `.lake/` build/dependency tree is **not**
+  included; run `lake exe cache get` (or `lake build`) to fetch Mathlib and
+  build.
+- `docs/FORMALIZATION.md` — map from each paper statement to its Lean name,
+  stating exactly what is and is not machine-checked.
 
 ## How to reproduce
 1. Create a Python environment (NumPy/SciPy/mpmath/matplotlib) and run the

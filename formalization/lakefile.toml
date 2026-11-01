@@ -1,4 +1,5 @@
-# Pinned Lake project that machine-checks FiberLemmas.lean
+# Pinned Lake project that machine-checks FiberLemmas.lean and the
+# operator-level KineticBalance library
 # (companion to "Exact fiber analysis of kinetic-balance spectral
 #  pollution for the radial Dirac operator").
 #
@@ -8,11 +9,11 @@
 # The exact resolved dependency graph is recorded in lake-manifest.json.
 #
 #   lake exe cache get      # prebuilt Mathlib oleans (several GB)
-#   lake build              # checks FiberLemmas.lean
+#   lake build              # checks FiberLemmas.lean and KineticBalance/*.lean
 
 name = "feastlemmas"
 version = "1.0.0"
-defaultTargets = ["FiberLemmas"]
+defaultTargets = ["FiberLemmas", "KineticBalance"]
 
 [[require]]
 name = "mathlib"
@@ -21,3 +22,8 @@ rev = "db584cd6d46c92f209a44c0f1c829460d327499d"
 
 [[lean_lib]]
 name = "FiberLemmas"
+
+# Operator-level formalization (spectral projectors, Prop. 2.1, Thm 3.1,
+# Thm 4.1, Cor. 4.2, Thm 5.1(a) Galerkin form). Root: KineticBalance.lean
+[[lean_lib]]
+name = "KineticBalance"
