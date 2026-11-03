@@ -61,6 +61,8 @@ substituted by hand. Layer 2 removes this limitation.
 | `SpectralProjector.lean` | `Λ₊`, `Λ₋` of a symmetric operator on a finite-dimensional real inner-product space, defined as orthogonal projectors onto sums of eigenspaces; action on eigenvectors; `Λ₊ + Λ₋ = I` when 0 is not an eigenvalue |
 | `GlobalDefect.lean` | abstract Thm. 4.1: `‖(I−Π)PΠ‖ = max_i ‖Pb_i‖·‖(I−P)b_i‖` for an orthogonal projector `P`, orthogonal `P`-invariant fibers and unit trial vectors `b_i` in them; the per-fiber norm identity `‖(I−bbᵀ)Pb‖ = ‖Pb‖·‖(I−P)b‖`; abstract Cor. 4.2 |
 | `Fiber.lean` | abstract Dirac fiber (`T` acts as `h(2ct)` on an orthonormal pair): eigenvectors `v±` and eigenvalues `±c²√(1+4t²)` derived; `Λ±` on the fiber; Thm. 3.1 (all four leakage laws) computed from the projectors; per-fiber factor `ℓ√(1−ℓ²)`; Rayleigh values |
+| `SVD.lean` | existence of a complete singular system for any linear map between finite-dimensional real inner-product spaces, from an orthonormal eigenbasis of `A†A` (spectral theorem) |
+| `Completeness.lean` | completeness of the fiber decomposition: the fibers and the two kernel blocks form an orthogonal internal direct sum of `H₀`-invariant blocks; `Λ±` block diagonal; `Λ₊ + Λ₋ = I`; every `K` has a complete singular system |
 | `DiracMatrix.lean` | the matrix `H₀ = [[c²I, cK],[cKᵀ, −c²I]]`; Prop. 2.1 from singular triples of `K`; free spectral gap `|μ| ≥ c²`; Thm. 3.1, **Thm. 4.1** (both `Λ₊` and `Λ₋`), Cor. 4.2 and Thm. 5.1(a) (Galerkin form, spurious in-gap eigenvalues) for `H₀` |
 
 Main theorems (all in namespace `KineticBalance`):
@@ -68,22 +70,22 @@ Main theorems (all in namespace `KineticBalance`):
 | Lean | Paper |
 |---|---|
 | `dirac_isDiracFiber`, `dirac_fiber_isOrtho`, `energy_eq` | Prop. 2.1 |
+| `diracBlock_isInternal`, `diracBlock_orthogonalFamily`, `diracBlock_iSup_eq_top`, `diracBlock_invariant`, `diracBlock_specProjPos_invariant`, `exists_completeSingularSystem`, `exists_dirac_block_decomposition` | Prop. 2.1 (completeness, SVD existence) |
 | `dirac_leakage` | Thm. 3.1 |
 | `dirac_global_defect_pos`, `dirac_global_defect_neg` | **Thm. 4.1** |
 | `dirac_dkb_defect_pos`, `dirac_dkb_defect_neg` | Cor. 4.2 |
 | `dirac_galerkin_eigen`, `dirac_anti_galerkin_in_gap`, `dirac_bal_galerkin_above_gap`, `dirac_anti_galerkin_spurious`, `diracOp_eigenvalue_abs_ge` | Thm. 5.1(a) |
 
-Hypotheses are explicit in each statement. The singular value
-decomposition of `K` is an **input**: the theorems take any family of
-singular triples (`SingularSystem`: orthonormal `u_j`, orthonormal `v_j`,
-`K v_j = σ_j u_j`, `Kᵀ u_j = σ_j v_j`, `σ_j ≥ 0`), and `c > 0`.
+Hypotheses are explicit in each statement. Most theorems take a family of
+singular triples of `K` as input (`SingularSystem`: orthonormal `u_j`,
+orthonormal `v_j`, `K v_j = σ_j u_j`, `Kᵀ u_j = σ_j v_j`, `σ_j ≥ 0`), and
+`c > 0`. That input is never vacuous: `exists_completeSingularSystem`
+constructs a complete one for every real `K`.
 
 ## Claimed in the paper text but NOT in Lean
 
 | Claim | Status |
 |---|---|
-| Fiber decomposition (Prop. 2.1): completeness, i.e. the fibers plus `ker K`, `ker Kᵀ` exhaust the space | not formalized. Invariance, orthogonality and the 2×2 block are formalized; the main theorems do not need completeness |
-| Existence of the SVD of `K` | taken as a hypothesis (`SingularSystem`), not constructed |
 | Thm. 5.1(a): the `b_j` are a complete eigenbasis of the Galerkin compression (no other Galerkin eigenvalues) | not written out. Each `b_j` is proved to be an eigenvector, and the `b_j` are orthonormal |
 | Dichotomy parts (b)–(d): Weyl perturbation, Galerkin pairing | not formalized |
 | Cusp lemma (Thms. 6.1, 6.2: exact representation, universal rate) | not formalized |

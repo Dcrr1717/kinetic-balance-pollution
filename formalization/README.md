@@ -26,11 +26,14 @@ claiming more.
 | `dirac_global_defect_pos`, `dirac_global_defect_neg` | `‖(I−Π)Λ±Π‖ = max_j ℓ_j √(1−ℓ_j²)` for the single-family trial space | **Thm 4.1** |
 | `dirac_dkb_defect_pos`, `dirac_dkb_defect_neg` | `(I−Π)Λ±Π = 0` for the dual-kinetic-balance pair space | Cor 4.2 |
 | `dirac_galerkin_eigen`, `dirac_anti_galerkin_in_gap`, `dirac_anti_galerkin_spurious`, `dirac_bal_galerkin_above_gap` | each trial vector is an eigenvector of `ΠH₀` with eigenvalue `R_f(t_j)`; the anti-balanced ones lie in the gap iff `0 < t_j² < 1/2` and are then not eigenvalues of `H₀`; the balanced ones are `≥ c²` | Thm 5.1(a) |
+| `diracBlock_isInternal`, `diracBlock_invariant`, `diracBlock_specProjPos_invariant`, `exists_dirac_block_decomposition` | the fibers, `ker Kᵀ ⊕ 0` and `0 ⊕ ker K` form an orthogonal internal direct sum of `H₀`- and `Λ±`-invariant blocks (`H₀ = ±c²` on the kernel blocks) | Prop. 2.1 (completeness) |
+| `exists_completeSingularSystem` | every real `K` has a complete singular system (SVD), built from the spectral theorem for `KᵀK` | SVD existence |
 | `diracOp_eigenvalue_abs_ge` | every eigenvalue `μ` of `H₀` has `|μ| ≥ c²` | free spectral gap |
 | `global_defect`, `fiber_defect_norm`, `defect_eq_zero_of_invariant` | the abstract operator-norm statements behind Thm 4.1 / Cor 4.2 | proofs of Thm 4.1 / Cor 4.2 |
 
-The SVD of `K` is a hypothesis of these theorems (`SingularSystem`), not
-a construction.
+Most of these theorems take a family of singular triples of `K` as a
+hypothesis (`SingularSystem`). `exists_completeSingularSystem` constructs a
+complete one for every `K`, so the hypothesis is never vacuous.
 
 ## Scalar level (`FiberLemmas`)
 
@@ -65,6 +68,10 @@ below; Mathlib compiled from source):
 `Build completed successfully (3193 jobs)`. `lake env lean AxiomCheck.lean`
 prints `[propext, Classical.choice, Quot.sound]` for all 29 audited
 declarations.
+
+Verified on 2026-11-03, after adding `SVD.lean` and `Completeness.lean`:
+`Build completed successfully (3195 jobs)`; all 41 audited declarations
+depend only on `[propext, Classical.choice, Quot.sound]`.
 
 ## Reproducing the check
 

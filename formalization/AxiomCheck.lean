@@ -14,6 +14,19 @@ import KineticBalance
 #print axioms KineticBalance.energy_eq
 #print axioms KineticBalance.IsDiracFiber.apply_vPlus
 #print axioms KineticBalance.IsDiracFiber.apply_vMinus
+-- Proposition 2.1, completeness of the fiber decomposition (and the SVD)
+#print axioms KineticBalance.exists_singularSystem
+#print axioms KineticBalance.exists_completeSingularSystem
+#print axioms KineticBalance.diracBlock_orthogonalFamily
+#print axioms KineticBalance.diracBlock_iSup_eq_top
+#print axioms KineticBalance.diracBlock_isInternal
+#print axioms KineticBalance.diracBlock_invariant
+#print axioms KineticBalance.diracBlock_specProjPos_invariant
+#print axioms KineticBalance.diracBlock_specProjNeg_invariant
+#print axioms KineticBalance.specProj_inlE_of_ker
+#print axioms KineticBalance.specProj_inrE_of_ker
+#print axioms KineticBalance.dirac_specProjPos_add_specProjNeg
+#print axioms KineticBalance.exists_dirac_block_decomposition
 -- spectral projectors
 #print axioms KineticBalance.specProjPos_apply_of_pos
 #print axioms KineticBalance.specProjPos_apply_of_nonpos

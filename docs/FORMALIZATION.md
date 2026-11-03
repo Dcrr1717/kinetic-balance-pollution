@@ -74,8 +74,12 @@ identity is proved. **not formalized** means there is no Lean counterpart.
 | Fiber eigenpairs `h v± = ±E v±`, `v₊ = (1,ρ)/√(1+ρ²)`, `v₋ = (−ρ,1)/√(1+ρ²)` | `IsDiracFiber.apply_vPlus`, `IsDiracFiber.apply_vMinus`, `IsDiracFiber.norm_vPlus`, `IsDiracFiber.norm_vMinus`, `IsDiracFiber.inner_vPlus_vMinus` | closed |
 | `E(σ) = √(c⁴+c²σ²) = c²√(1+4t²)` | `energy_eq` | closed |
 | Fibers are `Λ±`-invariant | `IsDiracFiber.specProjPos_mem_span`, `IsDiracFiber.specProjNeg_mem_span` | closed |
-| The fibers, together with `ker K` and `ker Kᵀ`, exhaust `ℝ^(m⊕n)` (full block-diagonalization) | — | **not formalized**; the statements below do not need it |
-| Existence of an SVD of `K` | — | **hypothesis**: the theorems take a family of singular triples (`SingularSystem`) as input; any SVD, or any subfamily of one, can be supplied |
+| **Completeness**: for a complete singular system (`CompleteSingularSystem`: `σ_j > 0`, `span{u} ⊔ ker Kᵀ = ℝᵐ`, `span{v} ⊔ ker K = ℝⁿ`), the fibers `W_j`, the upper kernel block `ker Kᵀ ⊕ 0` and the lower kernel block `0 ⊕ ker K` (`DiracBlock`, `diracBlock`) are mutually orthogonal and span `ℝ^(m⊕n)`: an internal direct sum | `diracBlock_orthogonalFamily`, `diracBlock_iSup_eq_top`, `diracBlock_isInternal` | closed |
+| Every block is `H₀`-invariant; `H₀ = +c²` on `ker Kᵀ ⊕ 0` and `H₀ = −c²` on `0 ⊕ ker K` | `diracBlock_invariant`, `diracOp_inlE_of_ker`, `diracOp_inrE_of_ker` | closed |
+| The spectral projectors are block diagonal: `Λ±` map every block into itself; on the kernel blocks `Λ₊ = I, Λ₋ = 0` (upper) and `Λ₊ = 0, Λ₋ = I` (lower) | `diracBlock_specProjPos_invariant`, `diracBlock_specProjNeg_invariant`, `specProj_inlE_of_ker`, `specProj_inrE_of_ker` | closed (hyp.: `c ≠ 0`) |
+| `Λ₊ + Λ₋ = I` for `H₀` | `dirac_specProjPos_add_specProjNeg` | closed (hyp.: `c ≠ 0`) |
+| Existence of the SVD of `K`: every real `K` has a complete singular system | `exists_completeSingularSystem` (via the abstract `exists_singularSystem`, built from the spectral theorem for `KᵀK`) | closed |
+| Unconditional form: for every `K` and `c`, an SVD whose blocks give an orthogonal internal direct sum of `H₀`-invariant subspaces | `exists_dirac_block_decomposition` | closed |
 
 ### Theorem 3.1 (exact per-mode leakage)
 
@@ -108,6 +112,9 @@ directions in fiber coordinates (`Family.coeffs`, `trialDir`):
 | Old scalar step `g²(1 − 2g² + g²) = g²(1−g²)` | `FeastLemmas.defect_identity` | scalar, kept; superseded by `fiber_defect_norm` |
 
 Remark: `global_defect` does not need the fibers to exhaust the space.
+The singular systems it accepts include the complete one that
+`exists_completeSingularSystem` constructs for every `K`
+(`CompleteSingularSystem.toSingularSystem`).
 `dirac_global_defect_pos/neg` therefore hold both for the untruncated
 single-family space (all singular triples) and for any truncation to a
 subfamily of singular triples.
@@ -151,9 +158,9 @@ independent checks.
 
 * No `sorry` and no added `axiom` anywhere in `FiberLemmas.lean` or
   `KineticBalance/`. `formalization/AxiomCheck.lean` runs `#print axioms` on
-  29 main declarations. Every one returns exactly
+  41 main declarations. Every one returns exactly
   `[propext, Classical.choice, Quot.sound]` (checked 2026-11-01, together
-  with `lake build`: `Build completed successfully (3193 jobs)`).
+  with `lake build`: `Build completed successfully (3195 jobs)`).
 * `FiberLemmas.lean` is unchanged by this layer; `KineticBalance` imports it
   and reuses `key_identity`, `rho_lt`, `rho_nonneg`, `w_sq`, `w_pos`,
   `anti_in_gap` and `bal_above_gap_nonneg`.
@@ -162,7 +169,10 @@ independent checks.
     This is the standard definition in finite dimension, and
     `specProjPos_add_specProjNeg` confirms `Λ₊ + Λ₋ = I` when `H₀` has no
     zero eigenvalue.
-  * The SVD is an input (`SingularSystem`), not constructed.
+  * The theorems take a singular system (`SingularSystem`) as input, so any
+    SVD, or any subfamily of one, can be supplied. A complete one always
+    exists (`exists_completeSingularSystem`), so the hypothesis is never
+    vacuous.
   * The fiber parameter is `t_j = σ_j/(2c)` with `σ_j ≥ 0`, `c > 0`.
 
 ## Reproducing the check
