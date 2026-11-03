@@ -9,3 +9,5 @@ import KineticBalance.SpectralProjector
 import KineticBalance.GlobalDefect
 import KineticBalance.Fiber
 import KineticBalance.DiracMatrix
+import KineticBalance.SVD
+import KineticBalance.Completeness

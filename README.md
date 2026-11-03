@@ -19,7 +19,8 @@ prepared for the IMA Journal of Numerical Analysis.
   (`test_cusp_quadrature.py`).
 - `formalization/` — the Lean formalization sources: the scalar identities
   (`FiberLemmas.lean`), the operator-level library (`KineticBalance/`, with
-  Prop. 2.1, Thms 3.1, 4.1, Cor. 4.2 and Thm 5.1(a) for the free Dirac
+  Prop. 2.1 (including completeness of the fiber decomposition and SVD
+  existence), Thms 3.1, 4.1, Cor. 4.2 and Thm 5.1(a) for the free Dirac
   matrix), `lakefile.toml`, `lake-manifest.json`, `lean-toolchain`,
   `README.md`, `SCOPE.md`. The `.lake/` build/dependency tree is **not**
   included; run `lake exe cache get` (or `lake build`) to fetch Mathlib and
